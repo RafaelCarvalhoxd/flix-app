@@ -2,6 +2,7 @@ const global = {
     currentPAGE: window.location.pathname // Get current page
 }
 
+
 async function displayPoularTvShows () {
     const { results } = await fetchData('tv/popular');
     
@@ -281,7 +282,12 @@ function initSwiper() {
 
 //Fetch data from TMDB API
 async function fetchData (endpoint) {
-    const API_KEY = '34b5e8a3ff03169f1c068a1cbfb64f90';
+  
+    const apiKeyResponse = await fetch("../apikey.json");
+    const apiKeyData = await apiKeyResponse.json();
+    
+    const API_KEY = apiKeyData.api_key;
+  
     const API_URL = 'https://api.themoviedb.org/3/';
 
     showSpinner();
