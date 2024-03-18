@@ -8,20 +8,12 @@ const global = {
     },
     api: {
       apiURL: 'https://api.themoviedb.org/3/',
-      apiKey: (async function apiKey () {
-      const apiKeyResponse = await fetch("../apikey.json");
-      const apiKeyData = await apiKeyResponse.json();
-      
-      return apiKeyData.api_key;
-      })(),
+      apiKey: '34b5e8a3ff03169f1c068a1cbfb64f90'
     
     }
-}
-
-
+};
 async function displayPoularTvShows () {
     const { results } = await fetchData('tv/popular');
-    
     results.forEach((tvshows) => {
         const div = document.createElement('div');
         div.classList.add('card');
@@ -50,11 +42,7 @@ async function displayPoularTvShows () {
         document.querySelector('#popular-shows').appendChild(div);
         console.log(tvshows);
     })
-
-   
 }
-
-
 async function displayPoularMovies () {
     const { results } = await fetchData('movie/popular');
     
@@ -86,13 +74,9 @@ async function displayPoularMovies () {
         document.querySelector('#popular-movies').appendChild(div);
     })
 };
-
 //Display Tv Show Details
-
-// Display Show Details
 async function displayShowDetails() {
   const showId = window.location.search.split('=')[1];
-
   const show = await fetchData(`tv/${showId}`);
 
   // Overlay for background image
@@ -157,9 +141,7 @@ async function displayShowDetails() {
   `;
 
   document.querySelector('#show-details').appendChild(div);
-}
-    
-
+} 
 //Display Movie Details
  async function displayMovieDetails () {
     const movieId = window.location.search.split('=')[1];
@@ -274,7 +256,6 @@ async function search () {
       showAlert('Please enter a search term')
     }
 };
-
 function displaySearchResults(results) {
   // Clear previous results
   document.querySelector('#search-results').innerHTML = '';
@@ -324,10 +305,8 @@ function displaySearchResults(results) {
 
     document.querySelector('#search-results').appendChild(div);
   });
-
   displayPagination();
 }
-
 // Create & Display Pagination For Search
 function displayPagination() {
   const div = document.createElement('div');
@@ -413,13 +392,10 @@ function initSwiper() {
     },
   });
 }
-
-   
-
 //Fetch data from TMDB API
 async function fetchData (endpoint) {
     
-    const API_KEY = await global.api.apiKey;
+    const API_KEY = global.api.apiKey;
   
     const API_URL = global.api.apiURL;
 
@@ -437,7 +413,7 @@ async function fetchData (endpoint) {
 
 async function searchAPIData (endpoint) {
     
-  const API_KEY = await global.api.apiKey;
+  const API_KEY = global.api.apiKey;
 
   const API_URL = global.api.apiURL;
 
