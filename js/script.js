@@ -1,5 +1,21 @@
 const global = {
-    currentPAGE: window.location.pathname // Get current page
+    currentPAGE: window.location.pathname, // Get current page
+    search: {
+      term: '',
+      type: '',
+      page: 1,
+      totalPages: 1,
+    },
+    api: {
+      apiURL: 'https://api.themoviedb.org/3/',
+      apiKey: (async function apiKey () {
+      const apiKeyResponse = await fetch("../apikey.json");
+      const apiKeyData = await apiKeyResponse.json();
+      
+      return apiKeyData.api_key;
+      })(),
+    
+    }
 }
 
 
@@ -229,6 +245,26 @@ function displayBackGroundImage(type, backgroundPath) {
     }
 }
 
+//Search Movies/Shows
+
+async function search () {
+    const queryString = window.location.search;
+    const urlParams = new URLSearchParams(queryString);
+
+    global.search.type = urlParams.get('type');
+    global.search.term = urlParams.get('search-term');
+    
+    if(global.search.term !== '' && global.search.type !== null) {
+      const { results } = await searchAPIData ();
+      console.log(results);
+    } else {
+      showAlert('Please enter a search term')
+    }
+
+
+};
+
+
 //Display Slider Movies
 
 async function displaySlider () {
@@ -243,7 +279,7 @@ async function displaySlider () {
         <img src="https://image.tmdb.org/t/p/w500${movie.poster_path}" alt="${movie.title}" />
       </a>
       <h4 class="swiper-rating">
-        <i class="fas fa-star text-secondary"></i> ${movie.vote_average} / 10
+        <i class="fas fa-star text-secondary"></i> ${movie.vote_average.toFixed(1)} / 10
       </h4>
     `;
 
@@ -282,13 +318,10 @@ function initSwiper() {
 
 //Fetch data from TMDB API
 async function fetchData (endpoint) {
-  
-    const apiKeyResponse = await fetch("../apikey.json");
-    const apiKeyData = await apiKeyResponse.json();
     
-    const API_KEY = apiKeyData.api_key;
+    const API_KEY = await global.api.apiKey;
   
-    const API_URL = 'https://api.themoviedb.org/3/';
+    const API_URL = global.api.apiURL;
 
     showSpinner();
 
@@ -300,6 +333,24 @@ async function fetchData (endpoint) {
     hideSpinner();
     
     return data;
+};
+
+async function searchAPIData (endpoint) {
+    
+  const API_KEY = await global.api.apiKey;
+
+  const API_URL = global.api.apiURL;
+
+  showSpinner();
+
+  const response = await fetch 
+  (`${API_URL}search/${global.search.type}?api_key=${API_KEY}&language=en-US&query=${global.search.term}`);
+  
+  const data = await response.json();
+
+  hideSpinner();
+  
+  return data;
 };
 
 function showSpinner () {
@@ -319,6 +370,17 @@ function highLightActiveLink () {
             link.classList.add('active');
         }
     })
+};
+
+// Show Error Alert
+
+function showAlert (message, className = 'error') {
+  const alertEl = document.createElement('div');
+  alertEl.classList.add('alert', className);
+  alertEl.appendChild(document.createTextNode(message));
+  document.querySelector('#alert').appendChild(alertEl);
+
+  setTimeout(() => alertEl.remove(), 3000);
 };
 
 function addCommasToNumber (number) {
@@ -347,7 +409,8 @@ function init () {
           console.log('Shows Details Page');
         break;
         case '/search.html' :
-            console.log('Search Page');
+          search ()
+          console.log('Search Page');
         break;
     }
 
@@ -355,3 +418,4 @@ function init () {
 }
 
 document.addEventListener('DOMContentLoaded', init);
+
